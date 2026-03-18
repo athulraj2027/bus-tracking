@@ -2,8 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "../config/STATUS_CODES.js";
 
-// import {StatusCodes} from ""
-
 interface JwtPayloadType {
   userId: string;
   role: any;
