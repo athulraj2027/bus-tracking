@@ -112,19 +112,147 @@ const assignDriver = async (
       return res.status(400).json({ message: "driverId is required" });
     }
 
-    // OPTIONAL (recommended): ensure bus exists
     const bus = await Bus.findById(busId);
 
     if (!bus) {
       return res.status(404).json({ message: "Bus not found" });
     }
 
-    // assign driver
+    const alreadyAssignedBus = await Bus.findOne({ driverId });
+    if (alreadyAssignedBus) {
+      alreadyAssignedBus.driverId = null;
+      await alreadyAssignedBus.save();
+    }
+
     bus.driverId = driverId;
     await bus.save();
 
     res.status(200).json({
       success: true,
+      data: bus,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAssignedBus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { userId } = req.user;
+
+    const assignedBus = await Bus.findOne({ driverId: userId });
+
+    if (!assignedBus) {
+      return res.status(404).json({
+        success: false,
+        message: "No bus assigned to this driver",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: assignedBus,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const startJourney = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { busId } = req.params;
+    const { userId } = req.user;
+
+    // 1. Find bus
+    const bus = await Bus.findById(busId);
+
+    if (!bus) {
+      return res.status(404).json({
+        success: false,
+        message: "Bus not found",
+      });
+    }
+
+    // 2. Check if this driver owns the bus
+    if (!bus.driverId || bus.driverId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not assigned to this bus",
+      });
+    }
+
+    // 3. Check if already active
+    if (bus.status === "ACTIVE") {
+      return res.status(400).json({
+        success: false,
+        message: "Journey already started",
+      });
+    }
+
+    // 4. Update status
+    bus.status = "ACTIVE";
+    await bus.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Journey started successfully",
+      data: bus,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const markInactive = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { busId } = req.params;
+    const { userId } = req.user;
+
+    // 1. Find bus
+    const bus = await Bus.findById(busId);
+
+    if (!bus) {
+      return res.status(404).json({
+        success: false,
+        message: "Bus not found",
+      });
+    }
+
+    // 2. Check if this driver owns the bus
+    if (!bus.driverId || bus.driverId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not assigned to this bus",
+      });
+    }
+
+    // 3. Check if already active
+    if (bus.status === "INACTIVE") {
+      return res.status(400).json({
+        success: false,
+        message: "Journey not active",
+      });
+    }
+
+    // 4. Update status
+    bus.status = "INACTIVE";
+    await bus.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Journey made inactive successfully",
       data: bus,
     });
   } catch (error) {
@@ -138,4 +266,7 @@ export default {
   editBus,
   getBuses,
   assignDriver,
+  getAssignedBus,
+  startJourney,
+  markInactive,
 };

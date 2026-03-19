@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const busSchema = new mongoose.Schema(
   {
     number: { type: String, required: true },
-    driverId: String,
+    driverId: { type: String, default: null },
     routeId: String,
     status: {
       type: String,

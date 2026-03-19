@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import Route from "../models/route.model.js";
 
-// CREATE ROUTE
 const createRoute = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, stops } = req.body;
@@ -31,7 +30,6 @@ const createRoute = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// GET ALL ROUTES
 const getRoutes = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const routes = await Route.find();
@@ -46,7 +44,6 @@ const getRoutes = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// GET ROUTE BY ID
 const getRouteById = async (
   req: Request,
   res: Response,

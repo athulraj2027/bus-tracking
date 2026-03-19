@@ -32,4 +32,25 @@ router.patch(
   busController.assignDriver,
 );
 
+router.get(
+  "/:busId/assigned-bus",
+  authMiddleware,
+  roleMiddleware("DRIVER"),
+  busController.getAssignedBus,
+);
+
+router.patch(
+  "/:busId/start",
+  authMiddleware,
+  roleMiddleware("DRIVER"),
+  busController.startJourney,
+);
+
+router.patch(
+  "/:busId/end",
+  authMiddleware,
+  roleMiddleware("DRIVER"),
+  busController.markInactive,
+);
+
 export default router;
