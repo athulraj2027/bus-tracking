@@ -205,4 +205,6 @@ const me = async (req: Request, res: Response) => {
   }
 };
 
-export default { sendOtp, login, verifyOtp, me };
+const logout = async (req: Request, res: Response) => {};
+
+export default { sendOtp, login, verifyOtp, me, logout };
