@@ -34,4 +34,8 @@ const findUserById = async (id: string) => {
   });
 };
 
-export default { createUser, findUserByEmail, findUserById };
+const getAllUsers = async () => {
+  return await prisma.user.findMany({ where: { role: "PASSENGER" } });
+};
+
+export default { createUser, findUserByEmail, findUserById, getAllUsers };
