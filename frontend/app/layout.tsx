@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/landing/Navbar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ReactQueryProvider from "@/providers/QueryProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,10 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>
-          <Navbar />
-          {children}
-        </TooltipProvider>
+        <ReactQueryProvider>
+          <TooltipProvider>
+            <Navbar />
+            {children}
+          </TooltipProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
